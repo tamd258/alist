@@ -57,6 +57,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
 	github.com/t3rm1n4l/go-mega v0.0.0-20240219080617-d494b6a8ace7
+	github.com/tchap/go-patricia/v2 v2.3.1
 	github.com/tidwall/gjson v1.18.0
 	github.com/u2takey/ffmpeg-go v0.5.0
 	github.com/upyun/go-sdk/v3 v3.0.4
