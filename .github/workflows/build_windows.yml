@@ -1,0 +1,65 @@
+name: Build Windows AMD64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          sudo snap install zig --classic --beta
+          docker pull crazymax/xgo:latest
+          go install github.com/crazy-max/xgo@latest
+          sudo apt install upx
+
+      - name: Fetch Web
+        run: |
+          curl -L https://github.com/ykxVK8yL5L/alist-web/releases/latest/download/dist.tar.gz -o dist.tar.gz
+          tar -zxvf dist.tar.gz
+          rm -rf public/dist
+          mv -f dist public
+          rm -rf dist.tar.gz
+
+      - name: Build
+        run: |
+          mkdir -p build/compress
+          version=$(git describe --abbrev=0 --tags 2>/dev/null || echo "dev")
+          builtAt="$(date +'%F %T %z')"
+          ldflags="\
+          -w -s \
+          -X 'github.com/alist-org/alist/v3/internal/conf.BuiltAt=${builtAt}' \
+          -X 'github.com/alist-org/alist/v3/internal/conf.GitAuthor=tam made' \
+          -X 'github.com/alist-org/alist/v3/internal/conf.GitCommit=$(git log --pretty=format:"%h" -1)' \
+          -X 'github.com/alist-org/alist/v3/internal/conf.Version=${version}' \
+          -X 'github.com/alist-org/alist/v3/internal/conf.WebVersion=dev' \
+          "
+          xgo -targets=windows/amd64 -out alist -ldflags="$ldflags" -tags=jsoniter .
+          cp alist-windows-amd64.exe alist.exe
+          zip build/compress/alist-windows-amd64.zip alist.exe
+          rm -f alist.exe alist-windows-amd64.exe
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alist-windows-amd64
+          path: build/compress/
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          files: build/compress/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
