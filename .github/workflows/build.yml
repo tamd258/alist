@@ -28,16 +28,21 @@ jobs:
       - uses: benjlevesque/short-sha@v2.2
         id: short-sha
 
-      - name: Install dependencies
+      - name: Fetch frontend
         run: |
-          sudo snap install zig --classic --beta
-          docker pull crazymax/xgo:latest
-          go install github.com/crazy-max/xgo@latest
-          sudo apt install upx
+          curl -L https://github.com/ykxVK8yL5L/alist-web/releases/latest/download/dist.tar.gz -o dist.tar.gz
+          tar -zxvf dist.tar.gz
+          rm -rf public/dist
+          mv -f dist public
+          rm -rf dist.tar.gz
 
-      - name: Build
+      - name: Build Windows amd64
         run: |
-          bash build.sh dev
+          mkdir -p dist
+          GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-w -s" -tags=jsoniter -o dist/alist-windows-amd64.exe .
+          cd dist
+          md5sum alist-windows-amd64.exe > md5.txt
+          cat md5.txt
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
