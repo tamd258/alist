@@ -14,4 +14,4 @@ FROM alpine:3.19
 WORKDIR /opt/alist/
 COPY --from=builder /alist /opt/alist/alist
 EXPOSE 5244
-CMD ["/opt/alist/alist", "server", "--no-prefix"]
+ENTRYPOINT ["/opt/alist/alist", "server", "--no-prefix"]
