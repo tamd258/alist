@@ -20,7 +20,7 @@ jobs:
           tar -xzf /tmp/kraft.tar.gz -C /tmp
           sudo mv /tmp/kraft /usr/local/bin/kraft
           sudo mv /tmp/kraftld /usr/local/bin/kraftld
-          kraft --version
+          kraft version
 
       - name: Create persistent volume (idempotent)
         run: kraft cloud volume create --size 1Gi --name alist-data || true
