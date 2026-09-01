@@ -29,6 +29,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Debug pure-Go static PIE build
+        run: |
+          docker run --rm -v $PWD:/app -w /app golang:1.23-alpine3.19 sh -c '
+            apk add --no-cache git bash musl-dev gcc binutils >/dev/null 2>&1
+            go env CGO_ENABLED GOOS GOARCH
+            go get github.com/glebarez/sqlite@latest >/dev/null 2>&1
+            go mod tidy >/dev/null 2>&1
+            CGO_ENABLED=0 go build -buildmode=pie -tags=jsoniter -trimpath -ldflags "-s -w" -o /tmp/alist .
+            echo "=== ELF check ==="
+            readelf -l /tmp/alist | grep -E "Type:|INTERP|DYNAMIC" | head -5
+            echo "=== size ==="
+            ls -la /tmp/alist
+          '
+
       - name: Build and push PIE image
         uses: docker/build-push-action@v6
         with:
