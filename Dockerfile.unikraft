@@ -1,8 +1,17 @@
+FROM golang:1.23-alpine AS builder
+RUN apk add --no-cache bash git musl-dev gcc
+WORKDIR /app/
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . ./
+RUN CGO_ENABLED=1 go build \
+    -buildmode=pie \
+    -tags=jsoniter \
+    -ldflags "-linkmode external -s -w" \
+    -o /alist .
+
 FROM alpine:3.20
 WORKDIR /opt/alist/
-ADD https://github.com/AlistGo/alist/releases/latest/download/alist-linux-musl-amd64.tar.gz /tmp/alist.tar.gz
-RUN tar -xzf /tmp/alist.tar.gz -C /opt/alist/ && \
-    chmod +x /opt/alist/alist && \
-    rm -f /tmp/alist.tar.gz
+COPY --from=builder /alist /opt/alist/alist
 EXPOSE 5244
 CMD ["/opt/alist/alist", "server", "--no-prefix"]
