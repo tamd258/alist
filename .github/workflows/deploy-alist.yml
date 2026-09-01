@@ -12,9 +12,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
 
       - name: Install kraft (KraftKit)
         run: |
@@ -25,31 +22,19 @@ jobs:
           sudo mv /tmp/kraftld /usr/local/bin/kraftld
           kraft version
 
-      - name: Create persistent volume (idempotent)
-        run: kraft cloud volume create --size 1Gi --name alist-data < /dev/null || true
-        env:
-          UKC_TOKEN: ${{ secrets.UKC_TOKEN }}
-          UKC_METRO: sin
-          KRAFTKIT_NO_PROMPT: "1"
-          KRAFTKIT_NO_CHECK_UPDATES: "true"
-          KRAFTKIT_LOG_TYPE: basic
-          KRAFTKIT_NO_WARN_CLOUD_DEPRECATION: "1"
-
-      - name: Deploy alist to Singapore (sin)
+      - name: Create instance from image (Singapore)
         run: |
-          kraft cloud deploy \
+          kraft cloud instance create \
+            --start \
             --metro sin \
             -p 5244:5244 \
             -M 512 \
-            --rootfs ./Dockerfile.unikraft \
-            --runtime base:latest \
-            --entrypoint "/opt/alist/alist server --no-prefix" \
             -v alist-data:/opt/alist/data \
             --restart always \
             --scale-to-zero off \
+            -s alist \
             -n alist \
-            --timeout 10m0s \
-            . < /dev/null
+            tammader/alist:latest < /dev/null
         env:
           UKC_TOKEN: ${{ secrets.UKC_TOKEN }}
           UKC_METRO: sin
