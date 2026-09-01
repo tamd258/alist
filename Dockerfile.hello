@@ -1,7 +1,7 @@
 FROM golang:1.23-alpine3.19 AS builder
 WORKDIR /src
 COPY test-hello/hello.go .
-RUN CGO_ENABLED=0 go build -buildmode=pie -o /hello .
+RUN GO111MODULE=off CGO_ENABLED=0 go build -buildmode=pie -o /hello hello.go
 
 FROM alpine:3.19
 COPY --from=builder /hello /hello
