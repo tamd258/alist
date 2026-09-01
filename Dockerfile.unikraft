@@ -7,7 +7,7 @@ COPY . ./
 RUN CGO_ENABLED=1 CGO_CFLAGS="-D_LARGEFILE64_SOURCE" go build \
     -buildmode=pie \
     -tags=jsoniter \
-    -ldflags "-linkmode external -s -w" \
+    -ldflags "-linkmode external -s -w -extldflags=-static" \
     -o /alist .
 
 FROM alpine:3.19
