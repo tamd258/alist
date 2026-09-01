@@ -1,5 +1,0 @@
-spec: v0.6
-name: alist
-runtime: base:latest
-rootfs: ./Dockerfile
-cmd: ["/opt/alist/alist", "server", "--no-prefix"]
