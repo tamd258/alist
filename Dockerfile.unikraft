@@ -1,13 +1,16 @@
 FROM golang:1.23-alpine3.19 AS builder
-RUN apk add --no-cache bash git musl-dev gcc
+RUN apk add --no-cache bash git
 WORKDIR /app/
 COPY go.mod go.sum ./
-RUN go mod download
+RUN go mod download || true
 COPY . ./
-RUN CGO_ENABLED=1 CGO_CFLAGS="-D_LARGEFILE64_SOURCE" go build \
+RUN go get github.com/glebarez/sqlite@latest && \
+    go mod tidy && \
+    CGO_ENABLED=0 go build \
     -buildmode=pie \
     -tags=jsoniter \
-    -ldflags "-linkmode external -s -w -extldflags=-static" \
+    -trimpath \
+    -ldflags "-s -w" \
     -o /alist .
 
 FROM alpine:3.19
