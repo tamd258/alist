@@ -26,6 +26,7 @@ jobs:
         run: kraft cloud volume create --size 1Gi --name alist-data < /dev/null || true
         env:
           UKC_TOKEN: ${{ secrets.UKC_TOKEN }}
+          UKC_METRO: sin
           KRAFTKIT_NO_PROMPT: "1"
           KRAFTKIT_NO_CHECK_UPDATES: "true"
           KRAFTKIT_LOG_TYPE: basic
@@ -44,6 +45,7 @@ jobs:
             . < /dev/null
         env:
           UKC_TOKEN: ${{ secrets.UKC_TOKEN }}
+          UKC_METRO: sin
           KRAFTKIT_NO_PROMPT: "1"
           KRAFTKIT_NO_CHECK_UPDATES: "true"
           KRAFTKIT_LOG_TYPE: basic
