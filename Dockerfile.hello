@@ -1,0 +1,9 @@
+FROM golang:1.23-alpine3.19 AS builder
+WORKDIR /src
+COPY hello.go .
+RUN CGO_ENABLED=0 go build -buildmode=pie -o /hello .
+
+FROM alpine:3.19
+COPY --from=builder /hello /hello
+EXPOSE 5244
+ENTRYPOINT ["/hello"]

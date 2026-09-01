@@ -52,3 +52,12 @@ jobs:
           push: true
           tags: ghcr.io/tamd258/alist:pie
           platforms: linux/amd64
+
+      - name: Build and push Go hello test image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.hello
+          push: true
+          tags: ghcr.io/tamd258/alist:hello
+          platforms: linux/amd64
