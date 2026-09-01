@@ -41,7 +41,7 @@ jobs:
             --metro sin \
             -p 5244:5244 \
             -M 512 \
-            --rootfs ./Dockerfile \
+            --rootfs ./Dockerfile.unikraft \
             --runtime base:latest \
             --entrypoint "/opt/alist/alist server --no-prefix" \
             -v alist-data:/opt/alist/data \
