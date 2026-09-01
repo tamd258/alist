@@ -48,6 +48,7 @@ jobs:
             --restart always \
             --scale-to-zero off \
             -n alist \
+            --timeout 10m0s \
             . < /dev/null
         env:
           UKC_TOKEN: ${{ secrets.UKC_TOKEN }}
