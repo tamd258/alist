@@ -1,5 +1,5 @@
 FROM golang:1.23-alpine3.19 AS builder
-RUN apk add --no-cache bash git
+RUN apk add --no-cache bash git musl-dev gcc
 WORKDIR /app/
 COPY go.mod go.sum ./
 RUN go mod download || true
@@ -10,7 +10,7 @@ RUN go get github.com/glebarez/sqlite@latest && \
     -buildmode=pie \
     -tags=jsoniter \
     -trimpath \
-    -ldflags "-s -w" \
+    -ldflags "-s -w -linkmode external -extldflags=-static" \
     -o /alist .
 
 FROM alpine:3.19
