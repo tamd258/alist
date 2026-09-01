@@ -6,11 +6,12 @@ RUN go mod download || true
 COPY . ./
 RUN go get github.com/glebarez/sqlite@latest && \
     go mod tidy && \
+    go env CGO_ENABLED GOOS GOARCH CC && \
     CGO_ENABLED=0 go build \
     -buildmode=pie \
     -tags=jsoniter \
     -trimpath \
-    -ldflags "-s -w -linkmode external -extldflags=-static" \
+    -ldflags "-s -w" \
     -o /alist .
 
 FROM alpine:3.19
